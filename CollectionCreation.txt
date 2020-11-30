@@ -1,0 +1,9 @@
+use gosolidary
+db.createCollection("business")
+db.createUser(
+  {
+    user: "user1",
+    pwd: "example",
+    roles: [ { role: "readWrite", db: "gosolidary" } ]
+  }
+);
