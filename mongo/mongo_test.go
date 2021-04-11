@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo"
 	"testing"
 
 	"gopkg.in/mgo.v2/bson"
@@ -14,16 +15,26 @@ var mongoConfig = Mongo{
 	Password: "example",
 }
 
-func TestFindAll(t *testing.T) {
-	t.Log("a")
-
-	res, err := mongoConfig.FindAll(struct{}{}, "test")
-	if err != nil {
+func TestMongo_FindAllNotFound(t *testing.T) {
+	res, err := mongoConfig.FindAll(bson.DocElem{"_id", "abcdefg"}, "test")
+	if err != nil && err != mongo.ErrNoDocuments {
 		fmt.Println(err.Error())
 		t.FailNow()
 	}
+	if res != nil {
+		t.FailNow()
+	}
+}
 
-	fmt.Println("result: ", res)
+func TestMongo_FindOneNotFound(t *testing.T) {
+	res, err := mongoConfig.FindOne(struct{}{}, "test")
+	if err != nil && err != mongo.ErrNoDocuments {
+		t.Log(err.Error())
+		t.FailNow()
+	}
+	if res != nil {
+		t.FailNow()
+	}
 }
 
 func TestInsertData(t *testing.T) {
@@ -38,10 +49,12 @@ func TestInsertData(t *testing.T) {
 	b, err := bson.Marshal(data)
 	res, err := mongoConfig.InsertData("test", b)
 	if err != nil {
-		fmt.Println(err.Error())
+		t.Log(err.Error())
 		t.FailNow()
 	}
-
+	if res == nil {
+		t.FailNow()
+	}
 	fmt.Println(res)
 }
 

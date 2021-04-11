@@ -1,7 +1,6 @@
 package business
 
 import (
-	"fmt"
 	"go-solidary/config"
 	"go-solidary/mongo"
 	"testing"
@@ -34,7 +33,25 @@ func TestInsertBusiness_HappyPath(t *testing.T) {
 	_, err := InsertBusiness(&config.Config{Mongo: configMongo}, b)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		t.Log(err.Error())
 		t.FailNow()
 	}
+}
+
+func TestCIFValidation(t *testing.T) {
+	assets := []struct {
+		cif      string
+		expected bool
+	}{{cif: "A58818501", expected: true}, {cif: "B67657189", expected: true}, {cif: "A5881850F", expected: false}}
+
+	for _, asset := range assets {
+		t.Run(asset.cif, func(t *testing.T) {
+			b := validateCIF(asset.cif)
+			if b != asset.expected {
+				t.FailNow()
+			}
+
+		})
+	}
+
 }

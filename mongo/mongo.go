@@ -108,8 +108,10 @@ func (m *Mongo) FindAll(query interface{}, collection string) (result []interfac
 
 	cur, err := coll.Find(ctx, query)
 	if err != nil {
-		log.Fatalf("error doing find request: %s", err)
+		log.Printf("error doing find request: %s", err)
+		return nil, err
 	}
+
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
 		var r interface{}
@@ -119,7 +121,9 @@ func (m *Mongo) FindAll(query interface{}, collection string) (result []interfac
 		}
 		result = append(result, r)
 	}
-
+	if len(result) == 0 {
+		return nil, mongo.ErrNoDocuments
+	}
 	return
 }
 
@@ -131,7 +135,7 @@ func (m *Mongo) FindOne(query interface{}, collection string) (result interface{
 	}
 	err = coll.FindOne(ctx, query).Decode(&result)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("findOne:", err)
 		return nil, err
 	}
 	return

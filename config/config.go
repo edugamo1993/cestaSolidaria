@@ -8,14 +8,15 @@ import (
 
 /*Config Type for config data*/
 type Config struct {
-	Server struct {
-		TLS      bool   `json:"tls"`
-		CertPath string `json:"certPath"`
-		Cert     string `json:"cert"`
-		KeyPath  string `json:"keyPath"`
-		Key      string `json:"key"`
-	} `json:"server"`
+	Server ServerConfig `json:"server"`
 	mongo.Mongo
+}
+type ServerConfig struct {
+	TLS      bool   `json:"tls"`
+	CertPath string `json:"certPath"`
+	Cert     string `json:"cert"`
+	KeyPath  string `json:"keyPath"`
+	Key      string `json:"key"`
 }
 
 //IsHTTPS returns true if is https and false if is http
